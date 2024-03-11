@@ -32,6 +32,7 @@ const { getOs, isLinux } = require('./shared/os.utils.js')
 const { createTalkWindow } = require('./talk/talk.window.js')
 const { createWelcomeWindow } = require('./welcome/welcome.window.js')
 const { installVueDevtools } = require('./install-vue-devtools.js')
+const AutoLaunch = require('auto-launch')
 
 /**
  * Parse command line arguments
@@ -61,13 +62,17 @@ if (!app.requestSingleInstanceLock()) {
  * Schedule check for a new version available to download from GitHub
  */
 if (process.env.NODE_ENV === 'production') {
-	setupReleaseNotificationScheduler(2 * 60)
+	//setupReleaseNotificationScheduler(2 * 60)
 }
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
-// if (require('electron-squirrel-startup')) {
-//   app.quit();
-// }
+if (require('electron-squirrel-startup')) {
+	const autoLaunch = new AutoLaunch({
+		name: app.name,
+	})
+	autoLaunch.enable()
+	app.quit()
+}
 
 ipcMain.on('app:quit', () => app.quit())
 ipcMain.handle('app:getOs', () => getOs())
