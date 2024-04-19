@@ -20,7 +20,7 @@
  */
 
 const path = require('node:path')
-const { app, dialog, BrowserWindow, ipcMain } = require('electron')
+const { app, dialog, BrowserWindow, ipcMain, desktopCapturer, systemPreferences, shell } = require('electron')
 const { setupMenu } = require('./app/app.menu.js')
 const { setupReleaseNotificationScheduler } = require('./app/githubReleaseNotification.service.js')
 const { enableWebRequestInterceptor, disableWebRequestInterceptor } = require('./app/webRequestInterceptor.js')
@@ -28,7 +28,7 @@ const { createAuthenticationWindow } = require('./authentication/authentication.
 const { openLoginWebView } = require('./authentication/login.window.js')
 const { createHelpWindow } = require('./help/help.window.js')
 const { createUpgradeWindow } = require('./upgrade/upgrade.window.js')
-const { getOs, isLinux } = require('./shared/os.utils.js')
+const { getOs, isLinux, isMac, isWayland } = require('./shared/os.utils.js')
 const { createTalkWindow } = require('./talk/talk.window.js')
 const { createWelcomeWindow } = require('./welcome/welcome.window.js')
 const { installVueDevtools } = require('./install-vue-devtools.js')
@@ -43,12 +43,12 @@ const ARGUMENTS = {
 }
 
 /**
- * Separate production and development instances, including application and user data
+ * On production use executable name as application name to allow several independent application instances.
+ * On development use "Nextcloud Talk (dev)" instead of the default "electron".
  */
-if (process.env.NODE_ENV === 'development') {
-	app.setName('Nextcloud Talk (dev)')
-	app.setPath('userData', path.join(app.getPath('appData'), 'Nextcloud Talk (dev)'))
-}
+const APP_NAME = process.env.NODE_ENV !== 'development' ? path.parse(app.getPath('exe')).name : 'Nextcloud Talk (dev)'
+app.setName(APP_NAME)
+app.setPath('userData', path.join(app.getPath('appData'), app.getName()))
 app.setAppUserModelId(app.getName())
 
 /**
@@ -76,6 +76,7 @@ if (require('electron-squirrel-startup')) {
 
 ipcMain.on('app:quit', () => app.quit())
 ipcMain.handle('app:getOs', () => getOs())
+ipcMain.handle('app:getAppName', () => app.getName())
 ipcMain.handle('app:getSystemL10n', () => ({
 	locale: app.getLocale().replace('-', '_'),
 	language: app.getPreferredSystemLanguages()[0].replace('-', '_'),
@@ -86,6 +87,35 @@ ipcMain.handle('app:setBadgeCount', async (event, count) => app.setBadgeCount(co
 ipcMain.on('app:relaunch', () => {
 	app.relaunch()
 	app.exit(0)
+})
+ipcMain.handle('app:getDesktopCapturerSources', async () => {
+	// macOS 10.15 Catalina or higher requires consent for screen access
+	if (isMac() && systemPreferences.getMediaAccessStatus('screen') !== 'granted') {
+		// Open System Preferences to allow screen recording
+		await shell.openExternal('x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture')
+		// We cannot detect that the user has granted access, so return no sources
+		// The user will have to try again after granting access
+		return null
+	}
+
+	// We cannot show live previews on Wayland, so we show thumbnails
+	const thumbnailWidth = isWayland() ? 320 : 0
+
+	const sources = await desktopCapturer.getSources({
+		types: ['screen', 'window'],
+		fetchWindowIcons: true,
+		thumbnailSize: {
+			width: thumbnailWidth,
+			height: thumbnailWidth * 9 / 16,
+		},
+	})
+
+	return sources.map((source) => ({
+		id: source.id,
+		name: source.name,
+		icon: source.appIcon && !source.appIcon.isEmpty() ? source.appIcon.toDataURL() : null,
+		thumbnail: source.thumbnail && !source.thumbnail.isEmpty() ? source.thumbnail.toDataURL() : null,
+	}))
 })
 
 app.whenReady().then(async () => {
@@ -164,9 +194,7 @@ app.whenReady().then(async () => {
 	})
 
 	const welcomeWindow = createWelcomeWindow()
-	welcomeWindow.once('ready-to-show', () => {
-		welcomeWindow.show()
-	})
+	welcomeWindow.once('ready-to-show', () => welcomeWindow.show())
 
 	ipcMain.once('appData:receive', async (event, appData) => {
 		if (appData.credentials) {
@@ -203,6 +231,7 @@ app.whenReady().then(async () => {
 		mainWindow.close()
 		mainWindow = createTalkWindow()
 		createMainWindow = createTalkWindow
+		mainWindow.once('ready-to-show', () => mainWindow.show())
 	})
 
 	ipcMain.handle('authentication:logout', async (event) => {
@@ -210,9 +239,7 @@ app.whenReady().then(async () => {
 			await mainWindow.webContents.session.clearStorageData()
 			const authenticationWindow = createAuthenticationWindow()
 			createMainWindow = createAuthenticationWindow
-			authenticationWindow.once('ready-to-show', () => {
-				authenticationWindow.show()
-			})
+			authenticationWindow.once('ready-to-show', () => authenticationWindow.show())
 
 			mainWindow.destroy()
 			mainWindow = authenticationWindow

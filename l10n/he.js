@@ -9,10 +9,11 @@ OC.L10N.register(
     "Issues" : "תקלות",
     "Close" : "סגירה",
     "Ok" : "אישור",
-    "Search" : "חיפוש",
-    "Notifications" : "התראות",
+    "Cancel" : "ביטול",
+    "Share screen" : "שיתוף המסך",
+    "Loading …" : "בטעינה…",
     "Online" : "מקוון",
     "Report a bug" : "דיווח על באג",
     "Log out" : "התנתק"
 },
-"nplurals=3; plural=(n == 1 && n % 1 == 0) ? 0 : (n == 2 && n % 1 == 0) ? 1: (n % 10 == 0 && n % 1 == 0 && n > 10) ? 2 : 3;");
+"nplurals=3; plural=(n == 1 && n % 1 == 0) ? 0 : (n == 2 && n % 1 == 0) ? 1: 2;");

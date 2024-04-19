@@ -11,8 +11,9 @@ OC.L10N.register(
     "Ok" : "ΟΚ",
     "No" : "Όχι",
     "Yes" : "Ναι",
-    "Search" : "Αναζήτηση",
-    "Notifications" : "Ειδοποιήσεις",
+    "Cancel" : "Ακύρωση",
+    "Share screen" : "Διαμοιρασμός οθόνης",
+    "Loading …" : "Φόρτωση…",
     "View profile" : "Προβολή προφίλ",
     "Report a bug" : "Αναφορά σφάλματος",
     "Log out" : "Έξοδος"

@@ -24,6 +24,26 @@ import { translate, translatePlural } from '@nextcloud/l10n'
 
 import { appData } from '../../app/AppData.js'
 import { dialogs } from './OC/dialogs.js'
+import { MimeTypeList } from './OC/mimetype.js'
+import { getDesktopMediaSource } from '../../talk/renderer/getDesktopMediaSource.js'
+
+let enabledAbsoluteWebroot = false
+
+/**
+ * Run a function with an absolute webroot enabled to not rely on window.location
+ *
+ * @param {Function} func - the function to run
+ * @param {...any} args - the arguments to pass to the function
+ * @return {any} the result of the function's run
+ */
+function runWithAbsoluteWebroot(func, ...args) {
+	enabledAbsoluteWebroot = true
+	const result = func.call(this, ...args)
+	enabledAbsoluteWebroot = false
+	return result
+}
+
+const getMaybeAbsoluteWebroot = () => enabledAbsoluteWebroot ? appData.serverUrl : new URL(appData.serverUrl).pathname
 
 const OC = {
 	// Constant from: https://github.com/nextcloud/server/blob/master/core/src/OC/constants.js
@@ -34,10 +54,26 @@ const OC = {
 		spreed: '/apps/spreed',
 	},
 
-	// TODO: Add OC.MimeType
+	MimeTypeList,
 	MimeType: {
-		getIconUrl() {
-			return undefined
+		// TODO: better to move this function from global to @nextcloud/files or @nextcloud/router
+		getIconUrl(mimeType) {
+			if (!mimeType) {
+				return undefined
+			}
+
+			while (MimeTypeList.aliases[mimeType]) {
+				mimeType = MimeTypeList.aliases[mimeType]
+			}
+
+			let icon = mimeType.replaceAll('/', '-')
+			icon = MimeTypeList.files.includes(icon) ? icon : mimeType.split('/')[0]
+
+			try {
+				return require(`../assets/default/img/filetypes/${icon}.svg`)
+			} catch {
+				return undefined
+			}
 		},
 	},
 
@@ -46,14 +82,15 @@ const OC = {
 	},
 
 	get webroot() {
-		// Original method returns only path, for example, /nextcloud-webroot
-		// Desktop needs to have full URL: https://nextcloud.host/nextcloud-webroot
-		return appData.serverUrl
+		return getMaybeAbsoluteWebroot()
 	},
 
 	config: {
-		// TODO: It works in any case, but may make links with redundant index.php. Should get actual value of modRewriteWorking?
-		modRewriteWorking: false,
+		// The capability's been available since Nextcloud 29
+		// For older versions, consider it disabled and always add index.php to URLs
+		get modRewriteWorking() {
+			return appData.capabilities?.core?.['mod-rewrite-working'] ?? false
+		},
 	},
 
 	dialogs,
@@ -81,7 +118,15 @@ const OC = {
 	},
 }
 
-const OCA = {}
+const OCA = {
+	Talk: {
+		Desktop: {
+			getDesktopMediaSource,
+			runWithAbsoluteWebroot,
+			enabledAbsoluteWebroot: false,
+		},
+	},
+}
 
 const OCP = {
 	Accessibility: {
@@ -101,10 +146,10 @@ export function initGlobals() {
 	window.OCP = OCP
 
 	Object.defineProperty(window, '_oc_webroot', {
-		get: () => OC.webroot,
+		get: () => getMaybeAbsoluteWebroot(),
 	})
 
 	Object.defineProperty(window, '_oc_appswebroots', {
-		get: () => OC.appswebroots,
+		get: () => window.OC.appswebroots,
 	})
 }

@@ -49,6 +49,12 @@ const TALK_DESKTOP = {
 	 */
 	packageInfo,
 	/**
+	 * Get app name
+	 *
+	 * @return {Promise<string>}
+	 */
+	getAppName: () => ipcRenderer.invoke('app:getAppName'),
+	/**
 	 * Quit the application
 	 */
 	quit: () => ipcRenderer.send('app:quit'),
@@ -83,6 +89,12 @@ const TALK_DESKTOP = {
 	 * @return {Promise<void>}
 	 */
 	setBadgeCount: (count) => ipcRenderer.invoke('app:setBadgeCount', count),
+	/**
+	 * Get available desktop capture sources: screens and windows
+	 *
+	 * @return {Promise<{ id: string, name: string, icon?: string }[]|null>}
+	 */
+	getDesktopCapturerSources: () => ipcRenderer.invoke('app:getDesktopCapturerSources'),
 	/**
 	 * Relaunch the application
 	 */

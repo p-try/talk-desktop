@@ -33,6 +33,10 @@ module.exports = {
 	},
 
 	rules: {
+		// import/default is not compatible with SFC Setup .vue files
+		// It works fine on server because by default in @nextcloud/eslint-config .vue files are not inspected via eslint-plugin-import thus import/extensions doesn't include .vue
+		// See: https://github.com/import-js/eslint-plugin-import/blob/main/README.md#importextensions
+		'import/default': 'off',
 		/**
 		 * ESLint
 		 */
@@ -102,5 +106,11 @@ module.exports = {
 		'vue/prefer-separate-static-class': 'error',
 		'vue/prefer-true-attribute-shorthand': 'error',
 		'vue/require-name-property': 'error',
+		/**
+		 * Nextcloud
+		 */
+		// Talk Desktop doesn't use real Nextcloud server globals
+		'@nextcloud/no-deprecations': 'off',
+		'@nextcloud/no-removed-apis': 'off',
 	},
 }
