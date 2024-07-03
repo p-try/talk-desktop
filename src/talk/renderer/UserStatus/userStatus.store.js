@@ -1,22 +1,6 @@
-/*
- * @copyright Copyright (c) 2024 Grigorii Shartsev <me@shgk.me>
- *
- * @author Grigorii Shartsev <me@shgk.me>
- *
- * @license AGPL-3.0-or-later
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+/**
+ * SPDX-FileCopyrightText: 2024 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
@@ -38,15 +22,13 @@ const restorePredefinedStatuses = () => JSON.parse(localStorage.getItem('TalkDes
 
 export const useUserStatusStore = defineStore('userStatus', () => {
 	/** @type {import('vue').Ref<import('./userStatus.types.ts').UserStatus|null>} */
-	const userStatus = ref(restoreUserStatus())
+	const userStatus = ref(null)
 
 	/** @type {import('vue').Ref<import('./userStatus.types.ts').PredefinedUserStatus[]|null>} */
 	const predefinedStatuses = ref(restorePredefinedStatuses())
 
 	/** @type {import('vue').Ref<null|object>} */
 	const backupStatus = ref(null)
-
-	watch(userStatus, (newUserStatus) => cacheUserStatus(newUserStatus), { deep: true })
 
 	const emitUserStatusUpdated = () => emit('user_status:status.updated', {
 		status: userStatus.value.status,
@@ -108,6 +90,13 @@ export const useUserStatusStore = defineStore('userStatus', () => {
 			backupStatus.value = await fetchBackupStatus(getCurrentUser().uid).catch(() => null)
 		}
 	}
+
+	const cachedStatus = restoreUserStatus()
+	if (cachedStatus) {
+		setUserStatus(cachedStatus, true)
+	}
+
+	watch(userStatus, (newUserStatus) => cacheUserStatus(newUserStatus), { deep: true })
 
 	const initPromise = (async () => {
 		await updateUserStatusWithHeartbeat(false, true)

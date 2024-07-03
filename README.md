@@ -1,4 +1,11 @@
+<!--
+  - SPDX-FileCopyrightText: 2022 Nextcloud GmbH and Nextcloud contributors
+  - SPDX-License-Identifier: CC0-1.0
+-->
+
 # 🖥️ Nextcloud Talk Desktop 💬
+
+[![REUSE status](https://api.reuse.software/badge/github.com/nextcloud/talk-desktop)](https://api.reuse.software/info/github.com/nextcloud/talk-desktop)
 
 > Nextcloud Talk Desktop client based on Nextcloud Talk web application bundling ✨
 
@@ -14,7 +21,6 @@
 ## 👾 Drawbacks
 
 - Currently not supported:
-  - Setting User Status ([#26](https://github.com/nextcloud/talk-desktop/issues/26))
   - Search ([#30](https://github.com/nextcloud/talk-desktop/issues/30))
   - Untrusted certificate on Linux ([#23](https://github.com/nextcloud/talk-desktop/issues/23))
   - Dark/light theme ([#17](https://github.com/nextcloud/talk-desktop/issues/17))

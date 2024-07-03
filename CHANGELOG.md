@@ -1,4 +1,34 @@
+<!--
+  - SPDX-FileCopyrightText: 2022 Nextcloud GmbH and Nextcloud contributors
+  - SPDX-License-Identifier: CC0-1.0
+-->
+
 # Changelog
+
+## v0.31.0 - 2024-06-30
+
+### Build-in Talk update
+
+- Built-in Talk in binaries is updated to v19.0.4
+
+## v0.30.0 - 2024-06-14
+
+### Build-in Talk update
+
+- Built-in Talk in binaries is updated to v19.0.2
+
+### Features
+
+- Add user status support [#26](https://github.com/nextcloud/talk-desktop/issues/26)
+- Flash or bounce icon on a new notification [#388](https://github.com/nextcloud/talk-desktop/issues/388)
+
+### Fixes
+
+- Improve user menu design [#683](https://github.com/nextcloud/talk-desktop/pull/683)
+- Make Talk Desktop user appears "online" on server [#634](https://github.com/nextcloud/talk-desktop/pull/634)
+- Disable sounds on Do-Not-Disturb [#415](https://github.com/nextcloud/talk-desktop/issues/415)
+- Increase the default window size to fit the display and include the join call dialog [#682](https://github.com/nextcloud/talk-desktop/pull/682)
+- Define the default outline color for focus visible [#643](https://github.com/nextcloud/talk-desktop/pull/643)
 
 ## v0.29.0 - 2024-04-19
 

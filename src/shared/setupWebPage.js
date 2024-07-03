@@ -1,29 +1,15 @@
-/*
- * @copyright Copyright (c) 2023 Grigorii Shartsev <me@shgk.me>
- *
- * @author Grigorii Shartsev <me@shgk.me>
- *
- * @license AGPL-3.0-or-later
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+/**
+ * SPDX-FileCopyrightText: 2023 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
 import { register } from '@nextcloud/l10n'
+import axios from '@nextcloud/axios'
 
 import { applyBodyThemeAttrs } from './theme.utils.js'
 import { appData } from '../app/AppData.js'
 import { initGlobals } from './globals/globals.js'
+import { setupInitialState } from './initialState.service.js'
 
 /**
  * @param {string} lang - language code, TS type: `${lang}_${countryCode}`|`${lang}`
@@ -83,19 +69,136 @@ async function applyL10n() {
 }
 
 /**
- * Make all required initial setup for the web page:
- * - set title according to app name
- * - restore app data
- * - get OS info
- * - apply theme to HTML data-attrs
- * - apply locale to HTML lang and data-locale attrs
- * - register translation bundles for Talk and Talk Desktop
+ * Apply user data to the document attributes and global variables that can be then used by @nextcloud/auth
+ * @return {void}
+ */
+async function applyUserData() {
+	if (!appData.userMetadata) {
+		return
+	}
+
+	// getCurrentUser().uid
+	document.head.setAttribute('data-user', appData.userMetadata.id)
+
+	// getCurrentUser().displayName
+	// Current user metadata had different property name for display name than userMetadata
+	// Remove if Nextcloud 27 is not supported
+	// @see https://github.com/nextcloud/server/pull/36665
+	document.head.setAttribute('data-user-displayname', appData.userMetadata.displayname ?? appData.userMetadata['display-name'])
+
+	// getCurrentUser().isAdmin
+	window._oc_isadmin = appData.userMetadata.groups.includes('admin')
+}
+
+/**
+ * Apply Talk Desktop specific Axios interceptors globally to use authentication for API and handle some responses on app level.
+ * @return {void}
+ */
+export function applyAxiosInterceptors() {
+	axios.interceptors.request.use((config) => {
+		// For CORS requests
+		config.withCredentials = true
+		// For OCS requests using Authentication headers
+		config.headers['OCS-APIRequest'] = 'true'
+		return config
+	}, (error) => Promise.reject(error))
+
+	// Handle 401 Unauthorized and 426 Upgrade Required responses
+	let upgradeInterceptorHasBeenTriggeredOnce = false
+	axios.interceptors.response.use((response) => response, (error) => {
+		if (error?.response?.status === 401) {
+			window.TALK_DESKTOP.logout()
+		}
+		if (error?.response?.status === 426) {
+			if (!upgradeInterceptorHasBeenTriggeredOnce) {
+				upgradeInterceptorHasBeenTriggeredOnce = true
+				window.TALK_DESKTOP.showUpgrade()
+			}
+		}
+		return Promise.reject(error)
+	})
+}
+
+/**
+ * Generates Initial State-like object based on capabilities and user metadata
+ *
+ * @param {object} capabilities - Capabilities
+ * @param {object} userMetadata - User Metadata
+ * @return {object}
+ */
+function getInitialStateFromCapabilities(capabilities, userMetadata) {
+	return {
+		// Todo check all used loadState for spreed
+		spreed: {
+			call_enabled: capabilities?.spreed?.config?.call?.enabled,
+			signaling_mode: 'external', // TODO: Missed in Capabilities. Is it a problem?
+			sip_dialin_info: undefined, // TODO: Missed in Capabilities. Is it a problem?
+			grid_videos_limit: 19, // TODO: Missed in Capabilities. Is it a problem?
+			grid_videos_limit_enforced: false, // TODO: Missed in Capabilities. Is it a problem?
+			federation_enabled: false, // TODO: Missed in Capabilities. Is it a problem?
+			start_conversations: capabilities?.spreed?.config?.conversations?.['can-create'],
+			circles_enabled: false, // TODO: Missed in Capabilities. Is it a problem?
+			guests_accounts_enabled: true, // TODO: Missed in Capabilities. It is a problem
+			read_status_privacy: capabilities?.spreed?.config?.chat?.['read-privacy'],
+			play_sounds: true, // Consider playing sound enabled by default on desktop until we have settings
+			attachment_folder: capabilities?.spreed?.config?.attachments?.folder,
+			attachment_folder_free_space: userMetadata?.quota?.free ?? 0, // TODO: Is User's Quota free equal to attachment_folder_free_space
+			enable_matterbridge: false, // TODO: Missed in Capabilities. Is it a problem?
+			user_group_ids: userMetadata?.groups,
+		},
+		theming: {
+			background: capabilities?.theming?.background,
+			themingDefaultBackground: '',
+			data: {
+				name: capabilities?.theming?.name,
+				url: capabilities?.theming?.url,
+				slogan: capabilities?.theming?.slogan,
+				color: capabilities?.theming?.color,
+				defaultColor: '#0082C9', // TODO: Find in Capabilities
+				imprintUrl: '', // TODO: Find in Capabilities
+				privacyUrl: '', // TODO: Find in Capabilities
+				inverted: false, // TODO: Find in Capabilities
+				cacheBuster: undefined, // TODO: Find in Capabilities
+				enabledThemes: ['light'], // TODO: Find in Capabilities
+			},
+			shortcutsDisabled: false, // TODO: Find in Capabilities
+		},
+		core: {
+			capabilities: capabilities,
+			config: {
+				version: '25.0.2.3', // TODO: Find in Capabilities
+				versionstring: '25.0.2', // TODO: Find in Capabilities
+				modRewriteWorking: false, // Forced to false. Is it used?
+			},
+		},
+		notifications: {
+			throttled_push_notifications: false, // TODO
+			sound_talk: true, // TODO
+			sound_notification: true, // TODO
+		},
+	}
+}
+
+/**
+ * Apply initial state to the document by rendering <input type="hidden"> elements with initial state data.
+ * Used by @nextcloud/initial-state package.
+ */
+export function applyInitialState() {
+	const initialState = getInitialStateFromCapabilities(appData.capabilities, appData.userMetadata)
+	setupInitialState(initialState)
+}
+
+/**
+ * Make all required initial setup for the web page for authorized user: server-rendered data, globals and ect.
  */
 export async function setupWebPage() {
 	document.title = await window.TALK_DESKTOP.getAppName()
-	initGlobals()
 	appData.restore()
+	applyInitialState()
+	initGlobals()
 	window.OS = await window.TALK_DESKTOP.getOs()
+	applyUserData()
 	applyBodyThemeAttrs()
+	applyAxiosInterceptors()
 	await applyL10n()
 }

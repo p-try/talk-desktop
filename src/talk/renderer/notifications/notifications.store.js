@@ -1,22 +1,6 @@
-/*
- * @copyright Copyright (c) 2023 Grigorii Shartsev <grigorii.shartsev@nextcloud.com>
- *
- * @author Grigorii Shartsev <grigorii.shartsev@nextcloud.com>
- *
- * @license GNU AGPL version 3 or any later version
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+/**
+ * SPDX-FileCopyrightText: 2023 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
 /* eslint-disable jsdoc/require-param-type,jsdoc/require-param-description */
@@ -179,6 +163,8 @@ export function createNotificationStore() {
 			body: notification.message,
 			icon: notification.icon,
 			tag: notification.notificationId,
+			// We have a custom sound
+			silent: true,
 		})
 		n.addEventListener('click', () => {
 			const event = {
@@ -346,7 +332,12 @@ export function createNotificationStore() {
 	// Initial call to the notification endpoint
 	_fetch()
 
-	const hasPush = listen('notify_notification', _fetchAfterNotifyPush, { credentials: appData.credentials })
+	const hasPush = listen('notify_notification', _fetchAfterNotifyPush, {
+		credentials: {
+			username: appData.credentials.user,
+			password: appData.credentials.password,
+		},
+	})
 
 	if (hasPush) {
 		console.debug('Has notify_push enabled, slowing polling to 15 minutes')
