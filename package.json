@@ -71,6 +71,7 @@
     "@nextcloud/webpack-vue-config": "^6.0.1",
     "@vercel/webpack-asset-relocator-loader": "^1.7.4",
     "@vue/tsconfig": "^0.5.1",
+		"auto-launch": "^5.0.6",
     "css-loader": "^6.10.0",
     "dotenv": "^16.4.5",
     "electron": "^32.1.0",
