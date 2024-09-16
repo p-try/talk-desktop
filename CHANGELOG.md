@@ -5,6 +5,78 @@
 
 # Changelog
 
+## v0.37.0 - 2024-09-06
+
+### Build-in Talk update
+
+- Built-in Talk in binaries is updated to v20.0.0-rc.4
+
+### Features
+
+- Add PDF Viewer [#784](https://github.com/nextcloud/talk-desktop/pull/784)
+- Add Text, Markdown, and Source Code Viewer (read-only) [#785](https://github.com/nextcloud/talk-desktop/pull/785)
+
+### Fixes
+
+- Improve Viewer styling and loading/error handling [#783](https://github.com/nextcloud/talk-desktop/pull/783)
+
+## v0.36.0 - 2024-08-27
+
+### Build-in Talk update
+
+- Built-in Talk in binaries is updated to v20.0.0-rc.3
+
+### Fixes
+
+- Fix error when connecting to old Nextcloud Talk servers [#760](https://github.com/nextcloud/talk-desktop/issues/760)
+- UI fixes [#761](https://github.com/nextcloud/talk-desktop/pull/761), [#773](https://github.com/nextcloud/talk-desktop/pull/773)
+
+## v0.35.0 - 2024-08-16
+
+### Build-in Talk update
+
+- Built-in Talk in binaries is updated to v20.0.0-rc.2
+
+### Fixes
+
+- Adjust About window size and paddings [#754](https://github.com/nextcloud/talk-desktop/pull/754)
+- Fix federated invitations support [#747](https://github.com/nextcloud/talk-desktop/pull/747)
+- Make Talk window default size smaller with new compact design [#746](https://github.com/nextcloud/talk-desktop/pull/746)
+- Fix the connection issue with losing base URL when built with Nextcloud Talk v20 [#742](https://github.com/nextcloud/talk-desktop/pull/742)
+
+### Other changes
+
+- Fix REUSE-compliance and check it on CI [#752](https://github.com/nextcloud/talk-desktop/pull/752)
+- Support building with Talk 21 (Nextcloud 31) [#751](https://github.com/nextcloud/talk-desktop/pull/751)
+
+## v0.34.0 - 2024-08-05
+
+### Build-in Talk update
+
+- Built-in Talk in binaries is updated to v20.0.0-beta.3
+
+### Features
+
+- Use built-in global styles instead of server's, increasing stability and performance but losing custom theming support [#741](https://github.com/nextcloud/talk-desktop/pull/741)
+
+### Fixes
+
+- Fix the connection issue with losing base URL when built with Nextcloud Talk v20 [#742](https://github.com/nextcloud/talk-desktop/pull/742)
+- Fix several minor UI bugs with the user menu [#737](https://github.com/nextcloud/talk-desktop/pull/737)
+- Fix styles compatibility with Nextcloud 30 [#736](https://github.com/nextcloud/talk-desktop/pull/736)
+- Adjust the title bar to new Nextcloud design [#738](https://github.com/nextcloud/talk-desktop/pull/738)
+- Disable custom title bar on Linux due to several; minor issue [#735](https://github.com/nextcloud/talk-desktop/pull/735)
+
+## v0.33.0 - 2024-07-18
+
+### Build-in Talk update
+
+- Built-in Talk in binaries is updated to v19.0.7
+
+### Fixes
+
+- User is kept logged in on the Login Flow Web-View [#683](https://github.com/nextcloud/talk-desktop/pull/717)
+
 ## v0.32.0 - 2024-07-11
 
 ### Fixes

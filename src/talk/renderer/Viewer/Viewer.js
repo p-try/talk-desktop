@@ -4,15 +4,18 @@
  */
 
 import Vue from 'vue'
-import ViewerApp from './ViewerApp.vue'
-import ViewerHandlerImages from './ViewerHandlerImages.vue'
-import ViewerHandlerVideos from './ViewerHandlerVideos.vue'
 
 /**
  * Create and mount Viewer instance with similar to original OCA.Viewer interface
  * @return {object}
  */
-export function createViewer() {
+export async function createViewer() {
+	const { default: ViewerApp } = await import('./ViewerApp.vue')
+	const { default: ViewerHandlerImages } = await import('./ViewerHandlerImages.vue')
+	const { default: ViewerHandlerVideos } = await import('./ViewerHandlerVideos.vue')
+	const { default: ViewerHandlerPdf } = await import('./ViewerHandlerPdf.vue')
+	const { default: ViewerHandlerText } = await import('./ViewerHandlerText.vue')
+
 	const Viewer = {
 		availableHandlers: [{
 			id: 'images',
@@ -43,6 +46,43 @@ export function createViewer() {
 				'video/x-matroska',
 			],
 			component: ViewerHandlerVideos,
+		}, {
+			id: 'pdf',
+			group: 'document',
+			mimes: ['application/pdf'],
+			component: ViewerHandlerPdf,
+		}, {
+			id: 'text',
+			group: 'document',
+			mimes: [
+				'text/markdown',
+				'text/plain',
+			],
+			component: ViewerHandlerText,
+		}, {
+			id: 'text',
+			group: 'code',
+			mimes: [
+				'application/javascript', // .js .mjs .cjs
+				'application/json', // .json
+				'application/x-msdos-program', // .bat .cmd
+				'application/x-perl', // .pl
+				'application/x-php', // .php
+				'application/xml', // .xml
+				'application/yaml', // .yaml .yml
+				'text/css', // .css
+				'text/csv', // .csv
+				'text/html', // .html
+				'text/x-c', // .c
+				'text/x-c++src', // .cpp
+				'text/x-h', // .h
+				'text/x-java-source', // .java
+				'text/x-ldif', // .ldif
+				'text/x-python', // .py
+				'text/x-rst', // .rst
+				'text/x-shellscript', // .sh
+			],
+			component: ViewerHandlerText,
 		}],
 
 		open(...args) {

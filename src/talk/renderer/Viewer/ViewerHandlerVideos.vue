@@ -3,49 +3,28 @@
   - SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 
-<template>
-	<div class="media-wrapper">
-		<video :src="src" controls />
-	</div>
-</template>
+<script setup>
+import { computed } from 'vue'
+import { generateUserFileDavUrl } from './viewer.utils.ts'
+import ViewerHandlerMedia from './ViewerHandlerMedia.vue'
 
-<script>
-import { generateRemoteUrl } from '@nextcloud/router'
-import { getCurrentUser } from '@nextcloud/auth'
-
-export default {
-	name: 'ViewerHandlerVideos',
-
-	props: {
-		file: {
-			type: Object,
-			required: true,
-		},
+const props = defineProps({
+	file: {
+		type: Object,
+		required: true,
 	},
+})
 
-	computed: {
-		src() {
-			if (!this.file) {
-				return null
-			}
-
-			return generateRemoteUrl(`dav/files/${getCurrentUser().uid}/${this.file.filename}`)
-		},
-	},
-}
+const src = computed(() => generateUserFileDavUrl(props.file.filename))
 </script>
 
-<style scoped>
-.media-wrapper {
-	display: flex;
-	height: 100%;
-	width: 100%;
-	justify-content: center;
-	align-items: center;
-
-	> * {
-		max-width: 100%;
-		max-height: 100%;
-	}
-}
-</style>
+<template>
+	<ViewerHandlerMedia v-slot="{ mediaClass, handleLoadEnd }">
+		<video class="viewer-video"
+			:class="mediaClass"
+			:src="src"
+			controls
+			@canplay="handleLoadEnd(false)"
+			@error="handleLoadEnd(true)" />
+	</ViewerHandlerMedia>
+</template>

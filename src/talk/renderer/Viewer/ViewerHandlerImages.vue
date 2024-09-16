@@ -3,56 +3,29 @@
   - SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 
-<template>
-	<div class="media-wrapper">
-		<img :src="src" :alt="file.basename">
-	</div>
-</template>
+<script setup>
+import { computed } from 'vue'
+import { generateFilePreviewUrl } from './viewer.utils.ts'
+import ViewerHandlerMedia from './ViewerHandlerMedia.vue'
 
-<script>
-import { generateUrl } from '@nextcloud/router'
-
-export default {
-	name: 'ViewerHandlerImages',
-
-	props: {
-		file: {
-			type: Object,
-			required: true,
-		},
+const props = defineProps({
+	file: {
+		type: Object,
+		required: true,
 	},
+})
 
-	computed: {
-		src() {
-			if (!this.file) {
-				return null
-			}
-
-			const searchParams = new URLSearchParams(Object.entries({
-				fileId: this.file.fileid,
-				x: Math.floor(screen.width * devicePixelRatio),
-				y: Math.floor(screen.height * devicePixelRatio),
-				a: 'true',
-				etag: this.file.etag,
-			})).toString()
-
-			return generateUrl(`/core/preview?${searchParams}`)
-		},
-	},
-}
+const src = computed(() => generateFilePreviewUrl(props.file.fileid, props.file.etag))
 </script>
 
-<style scoped>
-.media-wrapper {
-	display: flex;
-	height: 100%;
-	width: 100%;
-	justify-content: center;
-	align-items: center;
-
-	> * {
-		max-width: 100%;
-		max-height: 100%;
-	}
-}
-</style>
+<template>
+	<ViewerHandlerMedia v-slot="{ mediaClass, handleLoadEnd }">
+		<img :key="src"
+			class="viewer-image"
+			:class="mediaClass"
+			:src="src"
+			:alt="file.basename"
+			@load="handleLoadEnd(false)"
+			@error="handleLoadEnd(true)">
+	</ViewerHandlerMedia>
+</template>

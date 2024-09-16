@@ -1,9 +1,9 @@
 OC.L10N.register(
     "talk_desktop",
     {
+    "Invalid server address" : "Indiritzu serbidore non bàlidu",
     "Log in" : "Intra",
     "Logging in …" : "Intrende ...",
-    "Invalid server address" : "Indiritzu serbidore non bàlidu",
     "About" : "In contu de",
     "License" : "Lissèntzia",
     "Issues" : "Problemas",
@@ -18,8 +18,8 @@ OC.L10N.register(
     "4 hours" : "4 oras",
     "Today" : "Oe ",
     "Status message" : "Messàgiu de istadu",
-    "Cancel" : "Annulla",
     "Loading …" : "Carrigamentu …",
+    "Cancel" : "Annulla",
     "Menu" : "Menu",
     "Report a bug" : "Report a bug",
     "Back" : "In segus",

@@ -11,6 +11,8 @@ import { subscribe } from '@nextcloud/event-bus'
 import { getCurrentUser } from '@nextcloud/auth'
 
 /**
+ * Fetch and load server styles.
+ * Currently unused, until this feature is available
  * @return {Promise<void>}
  */
 export async function initServerStyles() {

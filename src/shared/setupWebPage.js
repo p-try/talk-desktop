@@ -10,6 +10,7 @@ import { applyBodyThemeAttrs } from './theme.utils.js'
 import { appData } from '../app/AppData.js'
 import { initGlobals } from './globals/globals.js'
 import { setupInitialState } from './initialState.service.js'
+import { TITLE_BAR_HEIGHT } from '../constants.js'
 
 /**
  * @param {string} lang - language code, TS type: `${lang}_${countryCode}`|`${lang}`
@@ -135,11 +136,12 @@ function getInitialStateFromCapabilities(capabilities, userMetadata) {
 			sip_dialin_info: undefined, // TODO: Missed in Capabilities. Is it a problem?
 			grid_videos_limit: 19, // TODO: Missed in Capabilities. Is it a problem?
 			grid_videos_limit_enforced: false, // TODO: Missed in Capabilities. Is it a problem?
-			federation_enabled: false, // TODO: Missed in Capabilities. Is it a problem?
+			federation_enabled: capabilities?.spreed?.config?.federation?.enabled,
 			start_conversations: capabilities?.spreed?.config?.conversations?.['can-create'],
 			circles_enabled: false, // TODO: Missed in Capabilities. Is it a problem?
 			guests_accounts_enabled: true, // TODO: Missed in Capabilities. It is a problem
 			read_status_privacy: capabilities?.spreed?.config?.chat?.['read-privacy'],
+			typing_privacy: capabilities?.spreed?.config?.chat?.['typing-privacy'],
 			play_sounds: true, // Consider playing sound enabled by default on desktop until we have settings
 			attachment_folder: capabilities?.spreed?.config?.attachments?.folder,
 			attachment_folder_free_space: userMetadata?.quota?.free ?? 0, // TODO: Is User's Quota free equal to attachment_folder_free_space
@@ -154,7 +156,7 @@ function getInitialStateFromCapabilities(capabilities, userMetadata) {
 				url: capabilities?.theming?.url,
 				slogan: capabilities?.theming?.slogan,
 				color: capabilities?.theming?.color,
-				defaultColor: '#0082C9', // TODO: Find in Capabilities
+				defaultColor: '#00679E', // TODO: Find in Capabilities
 				imprintUrl: '', // TODO: Find in Capabilities
 				privacyUrl: '', // TODO: Find in Capabilities
 				inverted: false, // TODO: Find in Capabilities
@@ -164,7 +166,7 @@ function getInitialStateFromCapabilities(capabilities, userMetadata) {
 			shortcutsDisabled: false, // TODO: Find in Capabilities
 		},
 		core: {
-			capabilities: capabilities,
+			capabilities,
 			config: {
 				version: '25.0.2.3', // TODO: Find in Capabilities
 				versionstring: '25.0.2', // TODO: Find in Capabilities
@@ -183,9 +185,17 @@ function getInitialStateFromCapabilities(capabilities, userMetadata) {
  * Apply initial state to the document by rendering <input type="hidden"> elements with initial state data.
  * Used by @nextcloud/initial-state package.
  */
-export function applyInitialState() {
+function applyInitialState() {
 	const initialState = getInitialStateFromCapabilities(appData.capabilities, appData.userMetadata)
 	setupInitialState(initialState)
+}
+
+/**
+ * Set CSS variable for --header-height
+ */
+function applyHeaderHeight() {
+	document.body.style.setProperty('--header-height', `${TITLE_BAR_HEIGHT}px`, 'important')
+	document.documentElement.style.setProperty('--header-height', `${TITLE_BAR_HEIGHT}px`, 'important')
 }
 
 /**
@@ -199,6 +209,7 @@ export async function setupWebPage() {
 	window.OS = await window.TALK_DESKTOP.getOs()
 	applyUserData()
 	applyBodyThemeAttrs()
+	applyHeaderHeight()
 	applyAxiosInterceptors()
 	await applyL10n()
 }

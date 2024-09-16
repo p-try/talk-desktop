@@ -5,8 +5,7 @@
 
 module.exports = {
 	extends: [
-		// https://github.com/nextcloud/eslint-config/
-		'@nextcloud',
+		'@nextcloud/eslint-config/typescript',
 		'plugin:vue/recommended',
 	],
 
@@ -33,7 +32,12 @@ module.exports = {
 	settings: {
 		'import/extensions': [
 			'.js',
+			'.ts',
 			'.vue',
+		],
+		'import/ignore': [
+			// eslint-plugin-import doesn't support setting TS parser as options for vue parser
+			'\\.vue$',
 		],
 	},
 
@@ -92,6 +96,8 @@ module.exports = {
 		// All Rules enabled
 		/** Vue / Uncategorized */
 		'vue/attribute-hyphenation': 'error',
+		'vue/block-order': ['error', { order: ['script', 'template', 'style'] }], // Follow new Vue standards
+		'vue/component-api-style': ['error', ['script-setup']], // Follow new Vue standards
 		'vue/component-name-in-template-casing': 'error',
 		'vue/component-options-name-casing': 'error',
 		// 'vue/custom-event-name-casing': 'error',

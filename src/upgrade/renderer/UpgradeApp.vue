@@ -3,16 +3,28 @@
   - SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 
+<script setup>
+import IconUpdate from 'vue-material-design-icons/Update.vue'
+import IconWeb from 'vue-material-design-icons/Web.vue'
+import NcButton from '@nextcloud/vue/dist/Components/NcButton.js'
+import { translate as t } from '@nextcloud/l10n'
+import { generateUrl } from '@nextcloud/router'
+
+const packageInfo = window.TALK_DESKTOP.packageInfo
+
+const browserLink = generateUrl('apps/spreed')
+</script>
+
 <template>
 	<div class="upgrade">
 		<h2>{{ t('talk_desktop', 'Upgrade required') }}</h2>
 		<p>{{ t('talk_desktop', 'The client version is too old and no longer supported by this server. Update is required.') }}</p>
 		<NcButton type="primary"
 			wide
-			:href="$options.packageInfo.repository"
+			:href="packageInfo.repository"
 			target="_blank">
 			<template #icon>
-				<MdiUpdate />
+				<IconUpdate />
 			</template>
 			{{ t('talk_desktop', 'Update Talk Desktop ↗') }}
 		</NcButton>
@@ -20,42 +32,12 @@
 			wide
 			:href="browserLink">
 			<template #icon>
-				<MdiWeb />
+				<IconWeb />
 			</template>
 			{{ t('talk_desktop', 'Continue in Web-Browser ↗') }}
 		</NcButton>
 	</div>
 </template>
-
-<script>
-import MdiUpdate from 'vue-material-design-icons/Update.vue'
-import MdiWeb from 'vue-material-design-icons/Web.vue'
-import NcButton from '@nextcloud/vue/dist/Components/NcButton.js'
-import { translate as t } from '@nextcloud/l10n'
-import { generateUrl } from '@nextcloud/router'
-
-export default {
-	name: 'UpgradeApp',
-
-	components: {
-		MdiUpdate,
-		MdiWeb,
-		NcButton,
-	},
-
-	packageInfo: window.TALK_DESKTOP.packageInfo,
-
-	computed: {
-		browserLink() {
-			return generateUrl('apps/spreed')
-		},
-	},
-
-	methods: {
-		t,
-	},
-}
-</script>
 
 <style scoped>
 .upgrade {

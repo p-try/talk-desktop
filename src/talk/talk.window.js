@@ -10,6 +10,8 @@ const { applyDownloadNotification } = require('../app/applyDownloadNotification.
 const { applyWheelZoom } = require('../app/applyWheelZoom.js')
 const { setupTray } = require('../app/app.tray.js')
 const { getBrowserWindowIcon } = require('../shared/icons.utils.js')
+const { isLinux } = require('../shared/os.utils.js')
+const { TITLE_BAR_HEIGHT } = require('../constants.js')
 
 /**
  * @return {import('electron').BrowserWindow}
@@ -21,29 +23,29 @@ function createTalkWindow() {
 	const talkWindowOptions = {
 		minWidth: 600,
 		minHeight: 400,
-		backgroundColor: '#00669E',
+		backgroundColor: '#00679E',
 		autoHideMenuBar: true,
 		webPreferences: {
 			preload: TALK_WINDOW_PRELOAD_WEBPACK_ENTRY,
 		},
 		icon: getBrowserWindowIcon(),
-		titleBarStyle: 'hidden',
+		titleBarStyle: isLinux() ? 'default' : 'hidden',
 		titleBarOverlay: {
-			color: '#00669E00', // Transparent
+			color: '#00679E00', // Transparent
 			symbolColor: '#FFFFFF', // White
-			height: 50,
+			height: TITLE_BAR_HEIGHT,
 		},
 		// Position of the top left corner of the traffic light on Mac
 		trafficLightPosition: {
 			x: 12, // In line with SearchBox
-			y: (50 - 16) / 2, // 16 is the default traffic light button diameter
+			y: (TITLE_BAR_HEIGHT - 16) / 2, // 16 is the default traffic light button diameter
 		},
 	}
 
 	const window = new BrowserWindow({
 		...talkWindowOptions,
-		width: Math.min(1680, screenWidth),
-		height: Math.min(1050, screenHeight),
+		width: Math.min(1400, screenWidth),
+		height: Math.min(900, screenHeight),
 		show: false,
 	})
 
