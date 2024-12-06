@@ -3,12 +3,15 @@ OC.L10N.register(
     {
     "Log in" : "Teken Aan",
     "Logging in …" : "Meld tans aan …",
-    "About" : "Aangaande",
+    "Dismiss" : "Ontslaan",
     "License" : "Lisensie",
+    "Reset" : "Herstel",
     "User status" : "Gebruikerstatus",
     "Don't clear" : "Moenie wis nie",
     "This week" : "Vandeesweek",
     "Menu" : "Kieslys",
+    "Settings" : "Instellings",
+    "About" : "Aangaande",
     "Log out" : "Teken af",
     "Invisible" : "Onsigbaar"
 },

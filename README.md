@@ -3,29 +3,37 @@
   - SPDX-License-Identifier: CC0-1.0
 -->
 
-# 🖥️ Nextcloud Talk Desktop 💬
+# Nextcloud Talk Desktop
 
 [![REUSE status](https://api.reuse.software/badge/github.com/nextcloud/talk-desktop)](https://api.reuse.software/info/github.com/nextcloud/talk-desktop)
 
-> Nextcloud Talk Desktop client based on Nextcloud Talk web application bundling ✨
+> Official Nextcloud Talk Desktop client
 
-## 📥 Download Binaries
+![Nextcloud Talk](./Nextcloud-Talk-light.png#gh-light-mode-only)
+![Nextcloud Talk](./Nextcloud-Talk-dark.png#gh-dark-mode-only)
 
-### https://github.com/nextcloud-releases/talk-desktop/releases
+## 📥 Install
+
+All binaries are available on [Nextcloud Releases](https://github.com/nextcloud-releases/talk-desktop/releases).
+
+| Platform (arch)          | Distribution type                                                                                                                                                   | Download link                                                                                                                                        |
+|--------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **🐧 Linux** (x64)       | [Flatpak](https://flatpak.org) single file (recommended)                                                                                                            | [Nextcloud.Talk-linux-x64.flatpak](https://github.com/nextcloud-releases/talk-desktop/releases/latest/download/Nextcloud.Talk-linux-x64.flatpak)     |
+| **🐧 Linux** (x64)       | ZIP archive                                                                                                                                                         | [Nextcloud.Talk-linux-x64.zip](https://github.com/nextcloud-releases/talk-desktop/releases/latest/download/Nextcloud.Talk-linux-x64.zip)             |
+| **🍎 macOS** (Universal) | Disc Image                                                                                                                                                          | [Nextcloud.Talk-macos-universal.dmg](https://github.com/nextcloud-releases/talk-desktop/releases/latest/download/Nextcloud.Talk-macos-universal.dmg) |
+| **🪟 Windows** (x64)     | Non-admin single-user one-click installer (recommended)                                                                                                             | [Nextcloud.Talk-windows-x64.exe](https://github.com/nextcloud-releases/talk-desktop/releases/latest/download/Nextcloud.Talk-windows-x64.exe)         |
+| **🪟 Windows** (x64)     | [MSI Deployment Tool](https://github.com/Squirrel/Squirrel.Windows/blob/develop/docs/using/machine-wide-installs.md) (for administrated environments, experimental) | [Nextcloud.Talk-windows-x64.msi](https://github.com/nextcloud-releases/talk-desktop/releases/latest/download/Nextcloud.Talk-windows-x64.msi)         |
+
+### via Package manager
+
+| Platform       | Package manager                                                                       | Command                         |
+|----------------|---------------------------------------------------------------------------------------|---------------------------------|
+| **🪟 Windows** | [Windows Package Manager](https://learn.microsoft.com/en-us/windows/package-manager/) | `winget install Nextcloud.Talk` |
 
 ## 🏗️ Prerequisites
 
 - [Nextcloud Server](https://github.com/nextcloud/server) version 27 or higher.
 - [Nextcloud Talk](https://github.com/nextcloud/spreed) version 17 or higher.
-
-## 👾 Drawbacks
-
-- Currently not supported:
-  - Search ([#30](https://github.com/nextcloud/talk-desktop/issues/30))
-  - Untrusted certificate on Linux ([#23](https://github.com/nextcloud/talk-desktop/issues/23))
-  - Dark/light theme ([#17](https://github.com/nextcloud/talk-desktop/issues/17))
-- Works with limitations:
-  - File Viewer — only images and videos
 
 ## 👥 Multi-account
 
@@ -47,148 +55,97 @@ However, using portable `zip` distribution, you can have several Nextcloud Talk 
         └── ...
 ```
 
-## 🧑‍💻 Development Setup
+## 🛠️ Development Setup
 
-### Initial setup
-
-```bash
-# Install dependencies
-npm ci
-
-# Make .env file
-cp .env.example .env
-
-# Don't forget to configure ENV variables! 
-```
-
-Nextcloud Talk Desktop requires [Nextcloud Talk source code](https://github.com/nextcloud/spreed).
-
-#### No `nextcloud/spreed` is cloned?
-
-Clone `nextcloud/spreed` and install dependencies:
-
-```bash
-# Clone in the repository root
-git clone https://github.com/nextcloud/spreed
-
-# Install dependencies
-cd ./spreed/
-npm ci
-
-# Don't forget to return back
-cd ../
-```
-
-#### `nextcloud/spreed` is already cloned?
-
-Set `TALK_PATH` ENV variable or edit `.env` file:
- ```dotenv
-TALK_PATH=/path/to/nextcloud-dev/apps/spreed/
- ```
-
-### Development
-
-```bash
-# Start development server
-npm start
-```
-
-## 📦 Packaging
-
-```bash
-#########################
-# Package to executable #
-#########################
-
-# 🐧 Linux
-npm run package:linux
-
-# 🍏 Mac (Darwin)
-npm run package:mac
-
-# 🪟 Windows (win32)
-npm run package:windows
-
-#  All
-npm run package:all
-
-#########################
-# Make ZIP distribution #
-#########################
-
-# 🐧 Linux
-npm run make:linux
-
-# 🍏 Mac (Darwin)
-# Note: doesn't work on Windows, use WSL
-npm run make:mac
-
-# 🪟 Windows (win32)
-npm run make:windows
-
-#  All
-npm run make:all
-```
-
-## ✈️ Release
-
-1. Create `release/vX.Y.Z` branch.
-2. Update `CHANGELOG.md`.  
-   1. If a built-in Talk version is to be changed - add a note:
-      ```md
-      ### Build-in Talk update
-
-      Built-in Talk in binaries is updated to $(VERSION) Talk changelog: https://github.com/nextcloud/spreed/blob/master/CHANGELOG.md
-      ``` 
-3. Update `package.json`:  
-   - For minor update:
+1. Install dependencies
+	 ```bash
+	 npm ci 
+	 ```
+2. Nextcloud Talk Desktop requires [Nextcloud Talk source code](https://github.com/nextcloud/spreed).
+   - **No `nextcloud/spreed` is cloned?**\
+     Clone it and install dependencies:
+	   ```sh
+	   # Clone Talk to the repository root
+	   git clone https://github.com/nextcloud/spreed
+     
+	   # Install dependencies
+	   npm ci --prefix=spreed
+	   ```
+   - **You want to reuse existing `nextcloud/spreed`, for instance, in a server setup?**\
+     Set `TALK_PATH` ENV variable or edit `.env` file:
      ```sh
-     npm version minor
+     cp .env.example .env
+     # Edit .env and set TALK_PATH
+     TALK_PATH=/path/to/nextcloud/server/apps-extra/spreed/
      ```
-   - For patch update:
-     ```sh
-     npm version patch
-     ```
-4. Create **a release PR**.
-5. Merge **the release PR**.
-6. Create and push **a tag**:
-   ```sh
-   git tag -a v$(version) -m "Tagging the $(version) release."
-   git push origin v$(version)
-   git push releases v$(version)
-   ```
-7. **Draft a new release** on GitHub in [nextcloud-releases/talk-desktop](https://github.com/nextcloud-releases/talk-desktop/releases)
-   1. Add **release title**: `v$(version) - Talk v$(talkVersion)`, e.g. `v0.10.0 - Talk v17.1.0-rc.1`
-   2. Choose a **tag**
-   3. Add the respective `CHANGELOG.md` section
-   4. Use the **Generate release notes** button and wrap put the result into
-      ```md
-      ## What's Changed
+3. Check `.env.example` for any additional configuration if needed.
 
-      <details>
-        <!-- Generated content -->
-      </details>
-      ``` 
-8. **Draft a new release** on GitHub in [nextcloud/talk-desktop](https://github.com/nextcloud/talk-desktop/releases)
-   1. Copy everything from the previous step
-   2. Add:
-      ```md
-      > 📥 Download Binaries on https://github.com/nextcloud-releases/talk-desktop/releases/tag/v$(version)
-      ```
-9. Package release, specify version and platforms:
-   ```sh
-   npm run release:package -- --version v$(talkVersion) --windows --linux --mac
-   ```
-10. Upload packages to the GitHub Releases on [nextcloud-releases/talk-desktop](https://github.com/nextcloud-releases/talk-desktop/releases/lastest)
-11. Publish both releases on GitHub Releases
+## 🧑‍💻 Development
 
-## 🎨 Updating global styles
+### Start development server in Electron
+
+```bash
+npm run dev
+```
+
+### Build binaries for production
+
+```bash
+# 🖥️ Current platform and architecture
+npm run build
+
+# 🐧 Linux (x64)
+npm run build:linux
+
+# 🍏 macOS (universal)
+npm run build:mac
+# 🍏 macOS (separate x64 and arm64)
+npm run build:mac:x64
+npm run build:mac:arm64
+
+# 🪟 Windows (win32-x64)
+npm run build:windows
+```
+
+Notes:
+- **General recommendation is to always build binaries on the same platform**
+- Building Windows binaries on Linux/Mac requires Wine
+- Building Mac binaries on Windows is not supported
+- Building Linux binaries on Windows is not supported for some Linux distributions
+
+### Maintenance
+
+#### Generating icons
+
+After changing source icons, to generate icons in different sizes and formats, run:
+
+```bash
+npm run generate-icons
+```
+
+#### Updating global (server) styles
 
 Talk frontend depends on the global Nextcloud server styles. To manually get them run:
 
-```sh
+```bah
 # node ./scripts/fetch-server-styles.mjs <VERSION>, for example
 node ./scripts/fetch-server-styles.mjs stable29
+```
+
+## 📦 Packaging distributions
+
+```bash
+# 🐧 Linux (x64)
+npm run package:linux
+
+# 🍏 macOS (universal)
+npm run package:mac
+# 🍏 macOS (separate x64 and arm64)
+npm run package:mac:arm64
+npm run package:mac:x64
+
+# 🪟 Windows (win32-x64)
+npm run package:windows
 ```
 
 ## 👥 Contribution Guidelines

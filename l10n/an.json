@@ -3,8 +3,10 @@
     "Close" : "Zarrar",
     "No" : "No",
     "Yes" : "Si",
+    "Never" : "Nunca",
     "Today" : "Hue",
     "Cancel" : "Canzelar",
+    "Settings" : "Configurazión",
     "Back" : "Ta zaga"
 },"pluralForm" :"nplurals=2; plural=(n != 1);"
 }

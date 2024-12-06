@@ -4,7 +4,11 @@
     "Ok" : "ព្រម",
     "No" : "ទេ",
     "Yes" : "បាទ ឬចាស",
+    "Light" : "ភ្លឺt",
+    "Dark" : "ងងឹត",
+    "Always" : "រាល់ពេល",
     "Today" : "ថ្ងៃ​នេះ",
-    "Cancel" : "លើកលែង"
+    "Cancel" : "លើកលែង",
+    "Settings" : "ការកំណត់"
 },"pluralForm" :"nplurals=1; plural=0;"
 }

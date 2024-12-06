@@ -6,7 +6,11 @@ OC.L10N.register(
     "Ok" : "ព្រម",
     "No" : "ទេ",
     "Yes" : "បាទ ឬចាស",
+    "Light" : "ភ្លឺt",
+    "Dark" : "ងងឹត",
+    "Always" : "រាល់ពេល",
     "Today" : "ថ្ងៃ​នេះ",
-    "Cancel" : "លើកលែង"
+    "Cancel" : "លើកលែង",
+    "Settings" : "ការកំណត់"
 },
 "nplurals=1; plural=0;");

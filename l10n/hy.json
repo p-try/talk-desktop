@@ -1,14 +1,17 @@
 { "translations": {
     "Log in" : "Մուտք գործել",
-    "About" : "Մասին",
+    "Close" : "Փակել",
+    "Copy" : "Պատճենել",
     "License" : "լիցենզիա",
     "Issues" : "հայց",
-    "Close" : "Փակել",
     "Ok" : "Լավ",
     "No" : "Ոչ",
     "Yes" : "Այո",
+    "Never" : "Երբեք",
     "Today" : "Այսօր",
     "This week" : "այս շաբաթ",
-    "Cancel" : "չեղարկել"
+    "Cancel" : "չեղարկել",
+    "Settings" : "Կարգավորումներ",
+    "About" : "Մասին"
 },"pluralForm" :"nplurals=2; plural=(n != 1);"
 }

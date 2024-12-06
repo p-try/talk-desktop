@@ -6,10 +6,10 @@
 import { register } from '@nextcloud/l10n'
 import axios from '@nextcloud/axios'
 
-import { applyBodyThemeAttrs } from './theme.utils.js'
 import { appData } from '../app/AppData.js'
 import { initGlobals } from './globals/globals.js'
 import { setupInitialState } from './initialState.service.js'
+import { initAppConfig } from './appConfig.service.ts' // eslint-disable-line import/namespace
 import { TITLE_BAR_HEIGHT } from '../constants.js'
 
 /**
@@ -199,17 +199,31 @@ function applyHeaderHeight() {
 }
 
 /**
+ * Handle download links
+ */
+function applyDownloadLinkHandler() {
+	document.addEventListener('click', (event) => {
+		const link = event.target.closest('a')
+		if (link && link.hasAttribute('download')) {
+			event.preventDefault()
+			window.TALK_DESKTOP.downloadURL(link.href, link.download)
+		}
+	})
+}
+
+/**
  * Make all required initial setup for the web page for authorized user: server-rendered data, globals and ect.
  */
 export async function setupWebPage() {
 	document.title = await window.TALK_DESKTOP.getAppName()
 	appData.restore()
+	await initAppConfig()
 	applyInitialState()
 	initGlobals()
-	window.OS = await window.TALK_DESKTOP.getOs()
+	window.systemInfo = await window.TALK_DESKTOP.getSystemInfo()
 	applyUserData()
-	applyBodyThemeAttrs()
 	applyHeaderHeight()
 	applyAxiosInterceptors()
 	await applyL10n()
+	applyDownloadLinkHandler()
 }

@@ -7,6 +7,8 @@ const { BASE_TITLE } = require('../constants.js')
 const { BrowserWindow } = require('electron')
 const { applyExternalLinkHandler } = require('../app/externalLinkHandlers.js')
 const { getBrowserWindowIcon } = require('../shared/icons.utils.js')
+const { getScaledWindowSize, applyZoom } = require('../app/utils.ts')
+const { applyContextMenu } = require('../app/applyContextMenu.js')
 
 /**
  *
@@ -14,13 +16,13 @@ const { getBrowserWindowIcon } = require('../shared/icons.utils.js')
  * @return {import('electron').BrowserWindow}
  */
 function createHelpWindow(parentWindow) {
-	const WIDTH = 720
-	const HEIGHT = 525
 	const TITLE = `About - ${BASE_TITLE}`
 	const window = new BrowserWindow({
 		title: TITLE,
-		width: WIDTH,
-		height: HEIGHT,
+		...getScaledWindowSize({
+			width: 1024,
+			height: 720,
+		}),
 		show: false,
 		maximizable: false,
 		resizable: false,
@@ -31,6 +33,7 @@ function createHelpWindow(parentWindow) {
 		webPreferences: {
 			preload: HELP_WINDOW_PRELOAD_WEBPACK_ENTRY,
 		},
+		titleBarStyle: 'hidden',
 		icon: getBrowserWindowIcon(),
 	})
 
@@ -39,6 +42,8 @@ function createHelpWindow(parentWindow) {
 	window.loadURL(HELP_WINDOW_WEBPACK_ENTRY)
 
 	applyExternalLinkHandler(window)
+	applyContextMenu(window)
+	applyZoom(window)
 
 	window.on('ready-to-show', () => {
 		window.show()

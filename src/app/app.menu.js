@@ -3,14 +3,11 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-const {
-	app,
-	shell,
-	Menu,
-} = require('electron')
-const { isMac } = require('../shared/os.utils.js')
+const { app, shell, Menu } = require('electron')
+const { isMac } = require('./system.utils.ts')
 const packageJson = require('../../package.json')
 const { createHelpWindow } = require('../help/help.window.js')
+const { increaseZoom, decreaseZoom, setZoom } = require('./zoom.service.ts')
 
 /**
  * Setup application menu
@@ -65,7 +62,7 @@ function setupMenu() {
 
 	const editMenu = {
 		label: 'Edit',
-		submenu: isMac() ? editMenuItemsMac : editMenuItems,
+		submenu: isMac ? editMenuItemsMac : editMenuItems,
 	}
 
 	const viewMenu = {
@@ -75,16 +72,9 @@ function setupMenu() {
 			{ role: 'forceReload' },
 			{ role: 'toggleDevTools' },
 			{ type: 'separator' },
-			{ role: 'resetZoom' },
-			{ role: 'zoomIn' },
-			// By default zoomIn works by "CommandOrControl + +" ("CommandOrControl + SHIFT + =")
-			// Hidden menu item adds zoomIn without SHIFT
-			{
-				role: 'zoomIn',
-				accelerator: 'CommandOrControl+=',
-				visible: false,
-			},
-			{ role: 'zoomOut' },
+			{ label: 'Reset Zoom', accelerator: 'CommandOrControl+0', click: (event, browserWindow) => setZoom(browserWindow, 1) },
+			{ label: 'Zoom In', accelerator: 'CommandOrControl+=', click: (event, browserWindow) => increaseZoom(browserWindow) },
+			{ label: 'Zoom Out', accelerator: 'CommandOrControl+-', click: (event, browserWindow) => decreaseZoom(browserWindow) },
 			{ type: 'separator' },
 			{ role: 'togglefullscreen' },
 		],
@@ -108,7 +98,7 @@ function setupMenu() {
 
 	const windowMenu = {
 		label: 'Window',
-		submenu: isMac() ? windowMenuItemsMac : windowMenuItems,
+		submenu: isMac ? windowMenuItemsMac : windowMenuItems,
 	}
 
 	const createLinkMenuItem = (label, link) => ({
@@ -123,6 +113,7 @@ function setupMenu() {
 		submenu: [
 			{
 				label: 'About',
+				accelerator: 'F1',
 				click: (event, focusedWindow) => {
 					createHelpWindow(focusedWindow)
 				},
@@ -136,11 +127,11 @@ function setupMenu() {
 
 	const template = [
 		// { role: 'appMenu' }
-		...(isMac() ? [macAppMenu] : []),
+		...(isMac ? [macAppMenu] : []),
 		// { role: 'fileMenu' }
 		{
 			label: 'File',
-			submenu: [isMac() ? { role: 'close' } : { role: 'quit' }],
+			submenu: [isMac ? { role: 'close' } : { role: 'quit' }],
 		},
 		// { role: 'editMenu' }
 		editMenu,

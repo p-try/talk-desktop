@@ -3,11 +3,15 @@ OC.L10N.register(
     {
     "Nextcloud server address" : "Nextcloud server adresse",
     "Log in" : "Logg inn",
-    "License" : "Lisens",
     "Close" : "Lat att",
+    "Dismiss" : "Forkast",
+    "Copy" : "Kopier",
+    "License" : "Lisens",
     "Ok" : "Greitt",
+    "Appearance" : "Utsjånad",
     "Today" : "I dag",
     "Report a bug" : "Rapporter feil",
+    "Settings" : "Innstillingar",
     "Away" : "Borte",
     "Invisible" : "Usynleg"
 },

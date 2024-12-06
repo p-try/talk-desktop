@@ -4,8 +4,9 @@
  */
 
 const { app, nativeTheme } = require('electron')
-const { isLinux } = require('./os.utils.js')
+const { isLinux, platform } = require('../app/system.utils.ts')
 const path = require('path')
+const { getAppConfig } = require('../app/AppConfig.ts')
 
 const icons = {
 	// Executable's icon is used by default
@@ -15,38 +16,40 @@ const icons = {
 
 	tray: {
 		darwin: {
-			light: require('../../img/icons/icon-tray-mac-light.png'),
-			dark: require('../../img/icons/icon-tray-mac-dark.png'),
+			// "*Template" icon in the system tray on macOS automatically changes its color by system
+			default: require('../../img/icons/IconTrayMac.png'),
+			light: require('../../img/icons/IconTrayMacTemplate.png'),
+			dark: require('../../img/icons/IconTrayMacTemplate.png'),
+			// These properties are not used, but the import is required to add the icon to the bundle
+			// It will be used by electron internally
+			default2x: require('../../img/icons/IconTrayMac@2x.png'),
+			light2x: require('../../img/icons/IconTrayMacTemplate@2x.png'),
+			dark2x: require('../../img/icons/IconTrayMacTemplate@2x.png'),
 		},
 
-		// This property is not used, but import is required to add the icon to the bundle.
-		// It will be used by electron internally
-		darwin_x2: {
-			light: require('../../img/icons/icon-tray-mac-light@2x.png'),
-			dark: require('../../img/icons/icon-tray-mac-dark@2x.png'),
+		win32: {
+			default: require('../../img/icons/IconTrayWin32.ico'),
+			light: require('../../img/icons/IconTrayWin32Light.ico'),
+			dark: require('../../img/icons/IconTrayWin32Dark.ico'),
 		},
 
-		win32: require('../../img/icons/icon.ico'),
-
-		linux: require('../../img/icons/icon-tray-linux.png'),
+		linux: {
+			default: require('../../img/icons/IconTrayLinux.png'),
+			light: require('../../img/icons/IconTrayLinuxLight.png'),
+			dark: require('../../img/icons/IconTrayLinuxDark.png'),
+		},
 	},
 }
 
 /**
- * Get tray icon for the given platform
- *
- * @param {'darwin'|'win32'|'cygwin'|string} [platform] platform otherwise current process.platform is used
- * @param {'light'|'dark'} [theme] theme for the darwin platform
+ * Get tray icon
  */
-function getTrayIcon(platform, theme) {
-	switch (platform ?? process.platform) {
-	case 'darwin':
-		return nativeTheme.shouldUseDarkColors || theme === 'dark' ? icons.tray.darwin.dark : icons.tray.darwin.light
-	case 'win32':
-		return icons.tray.win32
-	default:
-		return icons.tray.linux
-	}
+function getTrayIcon() {
+	const monochrome = getAppConfig('monochromeTrayIcon')
+	const theme = nativeTheme.shouldUseDarkColors ? 'dark' : 'light'
+	const kind = monochrome ? theme : 'default'
+
+	return icons.tray[platform][kind]
 }
 
 /**
@@ -55,7 +58,7 @@ function getTrayIcon(platform, theme) {
  * @return {string|undefined} Path to the icon or undefined if not required on the current platform
  */
 function getBrowserWindowIcon() {
-	if (isLinux()) {
+	if (isLinux) {
 		// https://www.electronforge.io/guides/create-and-add-icons#linux
 		return path.join(app.getAppPath(), '.webpack/main', icons.window.linux)
 	}

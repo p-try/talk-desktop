@@ -5,35 +5,40 @@
 
 const { BrowserWindow } = require('electron')
 const { getBrowserWindowIcon } = require('../shared/icons.utils.js')
-const {
-	isMac,
-	isLinux,
-} = require('../shared/os.utils.js')
+const { isMac } = require('../app/system.utils.ts')
+const { getScaledWindowSize, applyZoom } = require('../app/utils.ts')
+const { getAppConfig } = require('../app/AppConfig.ts')
 
 /**
  * @return {import('electron').BrowserWindow}
  */
 function createWelcomeWindow() {
+	const zoomFactor = getAppConfig('zoomFactor')
 	const window = new BrowserWindow({
-		width: 300,
-		height: 500,
+		...getScaledWindowSize({
+			width: 300,
+			height: 500,
+		}, false),
 		resizable: false,
 		autoHideMenuBar: true,
 		center: true,
 		fullscreenable: false,
-		titleBarStyle: isLinux() ? 'default' : 'hidden',
+		titleBarStyle: 'hidden',
 		show: false,
 		useContentSize: true,
 		webPreferences: {
 			preload: WELCOME_WINDOW_PRELOAD_WEBPACK_ENTRY,
+			zoomFactor,
 		},
 		icon: getBrowserWindowIcon(),
 	})
 
-	if (isMac()) {
-		// Hide traffic light buttons on Mac
+	// Hide traffic light buttons on Mac
+	if (isMac) {
 		window.setWindowButtonVisibility(false)
 	}
+
+	applyZoom(window)
 
 	window.loadURL(WELCOME_WINDOW_WEBPACK_ENTRY)
 

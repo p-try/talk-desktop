@@ -1,11 +1,18 @@
 { "translations": {
     "Log in" : "Ensaluti",
     "Logging in …" : "Ensaluti...",
-    "License" : "Permesilo",
     "Close" : "Malfermi",
+    "Dismiss" : "Preterpasi",
+    "License" : "Permesilo",
     "Ok" : "Bone",
     "No" : "Ne",
     "Yes" : "Jes",
+    "Light" : "Luma",
+    "Dark" : "Malluma",
+    "Always" : "Ĉiam",
+    "Never" : "Neniam",
+    "Theme" : "Etoso",
+    "Reset" : "Restarigi",
     "30 minutes" : "30 minutoj",
     "1 hour" : "1 horo",
     "4 hours" : "4 horoj",
@@ -14,6 +21,7 @@
     "Status message" : "Stato-mesaĝo",
     "Loading …" : "Ŝargado...",
     "Report a bug" : "Raporti problemon",
+    "Settings" : "Agordoj",
     "View profile" : "Vidi profilon",
     "Invisible" : "Nevidebla"
 },"pluralForm" :"nplurals=2; plural=(n != 1);"

@@ -9,12 +9,11 @@ const {
 } = require('electron')
 
 const packageJson = require('../package.json')
-const talkPackageJson = require('@talk/package.json')
 
 const packageInfo = {
 	productName: packageJson.productName,
-	version: packageJson.version,
-	talkVersion: talkPackageJson.version,
+	version: __VERSION_TAG__,
+	talkVersion: __TALK_VERSION_TAG__,
 	description: packageJson.description,
 	bugs: packageJson.bugs,
 	license: packageJson.license,
@@ -26,6 +25,7 @@ const packageInfo = {
  * @global
  */
 const TALK_DESKTOP = {
+	process,
 	/**
 	 * Subset of package.json meta-data
 	 *
@@ -43,11 +43,11 @@ const TALK_DESKTOP = {
 	 */
 	quit: () => ipcRenderer.send('app:quit'),
 	/**
-	 * Get OS version and versions as flags
+	 * Get system information such as OS version or installation properties
 	 *
-	 * @return {Promise<import('./shared/os.utils.js').OsVersion>}
+	 * @return {Promise<import('./app/system.utils.ts').OsVersion>}
 	 */
-	getOs: () => ipcRenderer.invoke('app:getOs'),
+	getSystemInfo: () => ipcRenderer.invoke('app:getSystemInfo'),
 	/**
 	 * Get system locale and preferred language
 	 *
@@ -86,9 +86,37 @@ const TALK_DESKTOP = {
 	 */
 	getDesktopCapturerSources: () => ipcRenderer.invoke('app:getDesktopCapturerSources'),
 	/**
-	 * Relaunch the application
+	 * Relaunch an entire application
 	 */
 	relaunch: () => ipcRenderer.send('app:relaunch'),
+	/**
+	 * Relaunch the main window without relaunching an entire application
+	 */
+	relaunchWindow: () => ipcRenderer.send('app:relaunchWindow'),
+	/**
+	 * Get an application config value by key
+	 * @param {string} [key] - Config key
+	 * @return {Promise<Record<string, unknown> | unknown>}
+	 */
+	getAppConfig: (key) => ipcRenderer.invoke('app:config:get', key),
+	/**
+	 * Set an application config value by key
+	 * @param {string} key - Config key
+	 * @param {any} [value] - Config value
+	 * @return {Promise<void>}
+	 */
+	setAppConfig: (key, value) => ipcRenderer.invoke('app:config:set', key, value),
+	/**
+	 * Listen for changes in the application config
+	 * @param {(event: import('electron').IpcRedererEvent, payload: { key: string, value: unknown, appConfig: import('./app/AppConfig.ts').AppConfig}) => void} callback - Callback
+	 */
+	onAppConfigChange: (callback) => ipcRenderer.on('app:config:change', callback),
+	/**
+	 * Trigger download of a URL
+	 * @param {string} url - URL to download
+	 * @param {string} [filename] - Filename suggestion for the download
+	 */
+	downloadURL: (url, filename) => ipcRenderer.send('app:downloadURL', url, filename),
 	/**
 	 * Send appData to main process on restore
 	 *
@@ -120,6 +148,11 @@ const TALK_DESKTOP = {
 	 * @return {Promise<void>}
 	 */
 	focusTalk: () => ipcRenderer.invoke('talk:focus'),
+	/**
+	 * Show the callbox window
+	 * @param {object} params - Callbox parameters
+	 */
+	showCallbox: (params) => ipcRenderer.send('callbox:show', params),
 	/**
 	 * Show the help window (aka About)
 	 *

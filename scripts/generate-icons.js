@@ -7,67 +7,114 @@ const path = require('node:path')
 const fs = require('node:fs/promises')
 const icongen = require('icon-gen')
 
+/* eslint-disable jsdoc/valid-types */
+
+/**
+ * Generate icons from a source SVG file in a specified format and sizes
+ * @param {string} source - Source SVG file path
+ * @param {`${string}.${'png'|'icns'|'ico'}`} filename - Output filename with extension
+ * @param {number[]} sizes - Sizes of the icons (max two sizes are allowed for PNG to have @2x file)
+ * @param {string} output - Output directory
+ */
+async function generate(source, filename, sizes, output) {
+	const type = path.extname(filename).slice(1)
+	const name = path.basename(filename, `.${type}`)
+
+	if (type === 'ico' || type === 'icns') {
+		return icongen(source, output, { [type]: { name, sizes } })
+	}
+
+	if (type === 'png') {
+		if (sizes.length > 2) {
+			throw new Error('Only two sizes are allowed for PNG')
+		}
+
+		// If icoSizes is not specified, icon-gen generates favicon.ico with default sizes
+		// And it fails if there was no PNG in the same sizes
+		// So it is required to generate favicon.ico with the same sized
+		await icongen(source, output, {
+			favicon: {
+				name,
+				pngSizes: sizes,
+				icoSizes: sizes,
+			},
+		})
+
+		// Remove unneeded favicon.ico
+		await fs.unlink(path.join(output, 'favicon.ico'))
+		// Rename name16.png -> name.png, name32.png -> name@2x.png
+		await fs.rename(path.join(output, `${name}${sizes[0]}.png`), path.join(output, `${name}.png`))
+		if (sizes.length === 2) {
+			await fs.rename(path.join(output, `${name}${sizes[1]}.png`), path.join(output, `${name}@2x.png`))
+		}
+	}
+}
+
 /**
  * Generate all icons from original SVGs
  *
  * @return {Promise<void>}
  */
 async function generateIcons() {
-	const originalPath = path.join(__dirname, '../img/talk-icon-rounded.svg')
-	const originalMacPath = path.join(__dirname, '../img/talk-icon-mac-shadow.svg')
-	const originalMacTrayLightPath = path.join(__dirname, '../img/talk-icon-plain-light.svg')
-	const originalMacTrayDarkPath = path.join(__dirname, '../img/talk-icon-plain-dark.svg')
-	const outputPath = path.join(__dirname, '../img/icons')
+	const output = path.join(__dirname, '../img/icons')
 
-	await icongen(originalPath, outputPath, {
-		// Windows
-		ico: {
-			name: 'icon',
-			sizes: [16, 24, 32, 48, 256],
-		},
-		// Linux (PNG)
-		favicon: {
-			name: 'icon',
-			pngSizes: [32, 512],
-			icoSizes: [],
-		},
-	})
+	/**
+	 * Prepare output directory
+	 */
 
-	await icongen(originalMacPath, outputPath, {
-		// Mac
-		icns: {
-			name: 'icon',
-			sizes: [16, 32, 64, 128, 256, 512, 1024],
-		},
-	})
+	await fs.rm(output, { recursive: true })
+	await fs.mkdir(output)
 
-	// Tray icon - Mac
-	await icongen(originalMacTrayLightPath, outputPath, {
-		favicon: {
-			name: 'icon-tray-mac-light',
-			pngSizes: [16, 32],
-		},
-	})
-	await icongen(originalMacTrayDarkPath, outputPath, {
-		favicon: {
-			name: 'icon-tray-mac-dark',
-			pngSizes: [16, 32],
-		},
-	})
+	/**
+	 * Source icons
+	 */
 
-	// Rename icon512.png -> icon.png
-	await fs.rename(path.join(outputPath, 'icon512.png'), path.join(outputPath, 'icon.png'))
-	// Rename icon32.png -> icon-tray-linux.png
-	await fs.rename(path.join(outputPath, 'icon32.png'), path.join(outputPath, 'icon-tray-linux.png'))
+	const IconMain = path.join(__dirname, '../img/talk-icon-rounded.svg')
+	const IconMainSpaced = path.join(__dirname, '../img/talk-icon-rounded-spaced.svg')
+	const IconMac = path.join(__dirname, '../img/talk-icon-mac-shadow.svg')
+	const IconPlainLight = path.join(__dirname, '../img/talk-icon-plain-light.svg')
+	const IconPlainSpacedLight = path.join(__dirname, '../img/talk-icon-plain-spaced-light.svg')
+	const IconPlainSpacedDark = path.join(__dirname, '../img/talk-icon-plain-spaced-dark.svg')
 
-	// Remove unused favicon
-	await fs.unlink(path.join(outputPath, 'favicon.ico'))
+	/**
+	 * Size recommendations:
+	 * - macOS: https://developer.apple.com/design/human-interface-guidelines/app-icons#macOS-app-icon-sizes
+	 * - Windows: https://learn.microsoft.com/en-us/windows/apps/design/style/iconography/app-icon-construction#icon-scaling
+	 */
 
-	// Rename icon-tray-mac-(light|dark)16.png -> icon-tray-mac-(light|dark).png, icon-tray-mac-(light|dark)32.png -> icon-tray-mac-(light|dark)@2x.png
-	await fs.rename(path.join(outputPath, 'icon-tray-mac-light16.png'), path.join(outputPath, 'icon-tray-mac-light.png'))
-	await fs.rename(path.join(outputPath, 'icon-tray-mac-light32.png'), path.join(outputPath, 'icon-tray-mac-light@2x.png'))
-	await fs.rename(path.join(outputPath, 'icon-tray-mac-dark16.png'), path.join(outputPath, 'icon-tray-mac-dark.png'))
-	await fs.rename(path.join(outputPath, 'icon-tray-mac-dark32.png'), path.join(outputPath, 'icon-tray-mac-dark@2x.png'))
+	const LINUX_ICON_SIZE = 512
+	const MACOS_ICON_SIZES = [16, 32, 64, 128, 256, 512, 1024]
+	const WINDOWS_ICON_SIZES = [16, 20, 24, 30, 32, 36, 40, 48, 60, 64, 72, 80, 96, 256]
+	const LINUX_TRAY_ICON_SIZE = [32]
+	const MACOS_TRAY_ICON_SIZES = [16, 32]
+	const WINDOWS_TRAY_ICON_SIZES = [16, 20, 24, 32, 40, 48, 64]
+
+	/**
+	 * App icons
+	 */
+
+	// Linux
+	await generate(IconMainSpaced, 'icon.png', [LINUX_ICON_SIZE], output)
+	// macOS
+	await generate(IconMac, 'icon.icns', MACOS_ICON_SIZES, output)
+	// Windows
+	await generate(IconMain, 'icon.ico', WINDOWS_ICON_SIZES, output)
+
+	/**
+	 * Tray icons
+	 */
+
+	// Linux
+	await generate(IconMainSpaced, 'IconTrayLinux.png', LINUX_TRAY_ICON_SIZE, output)
+	await generate(IconPlainSpacedLight, 'IconTrayLinuxLight.png', LINUX_TRAY_ICON_SIZE, output)
+	await generate(IconPlainSpacedDark, 'IconTrayLinuxDark.png', LINUX_TRAY_ICON_SIZE, output)
+	// macOS
+	await generate(IconMain, 'IconTrayMac.png', MACOS_TRAY_ICON_SIZES, output)
+	await generate(IconPlainLight, 'IconTrayMacTemplate.png', MACOS_TRAY_ICON_SIZES, output)
+	// Windows
+	await generate(IconMain, 'IconTrayWin32.ico', WINDOWS_TRAY_ICON_SIZES, output)
+	await generate(IconPlainSpacedLight, 'IconTrayWin32Light.ico', WINDOWS_ICON_SIZES, output)
+	await generate(IconPlainSpacedDark, 'IconTrayWin32Dark.ico', WINDOWS_ICON_SIZES, output)
 }
 
 generateIcons()

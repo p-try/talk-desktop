@@ -5,6 +5,81 @@
 
 # Changelog
 
+## v1.0.0 - 2024-12-03
+
+### Features
+
+- Add call notification popup [#868](https://github.com/nextcloud/talk-desktop/pull/868)
+
+### Fixes 
+
+- Adjust icon on Linux and Windows [#948](https://github.com/nextcloud/talk-desktop/pull/948)
+- Fix an occasional error alert [#936](https://github.com/nextcloud/talk-desktop/pull/936)
+- Fix minor issues in the About window [#934](https://github.com/nextcloud/talk-desktop/pull/934), [#935](https://github.com/nextcloud/talk-desktop/pull/935)
+- Fix zoom issues in edge cases [#893](https://github.com/nextcloud/talk-desktop/pull/893)
+
+### Changes
+
+- Built-in Talk in binaries is updated to v20.1.0 [#949](https://github.com/nextcloud/talk-desktop/pull/949)
+- New release notify interval is decreased from 2 hours to 1 day [#952](https://github.com/nextcloud/talk-desktop/pull/952)
+- `.env` file is now optional for development [#929](https://github.com/nextcloud/talk-desktop/pull/929) 
+- Update translations
+- Update dependencies
+
+## v1.0.0-rc.2 - 2024-11-22
+
+### Features
+
+- Add new About window with an improved diagnosis report [#917](https://github.com/nextcloud/talk-desktop/pull/917)
+- Add "Copy email address" to `mailto:` links context menu [#890](https://github.com/nextcloud/talk-desktop/pull/890)
+
+### Fixes
+
+- Fix light/dark theme is not applied to native parts of the app [#916](https://github.com/nextcloud/talk-desktop/pull/916)
+- Fix parallel installations sharing common settings [#891](https://github.com/nextcloud/talk-desktop/pull/891)
+- Fix macOS tray icon not following system style [#887](https://github.com/nextcloud/talk-desktop/pull/887)
+- Fix screensharing on Flatpak distribution in Wayland [#877](https://github.com/nextcloud/talk-desktop/pull/877)
+
+### Changes
+
+- Built-in Talk in binaries is updated to v20.1.0-rc.2 [#920](https://github.com/nextcloud/talk-desktop/pull/920)
+- Distributions for macOS and Windows are now signed with a certificate [#908](https://github.com/nextcloud/talk-desktop/pull/908)
+- New MSI distribution is now provided for Windows in administrated environments with GPO deployment [#922](https://github.com/nextcloud/talk-desktop/pull/922)
+- ZIP distribution is now provided only for Linux [#904](https://github.com/nextcloud/talk-desktop/pull/904)
+- Distribution for macOS is now universal (support both Apple Silicon and Intel Macs) [#896](https://github.com/nextcloud/talk-desktop/pull/896)
+- Flatpak distribution runtime and platform have been updated [#892](https://github.com/nextcloud/talk-desktop/pull/892)
+- Update translations
+- Update dependencies
+
+## v1.0.0-rc.1 - 2024-11-11
+
+### Features
+
+- Add application settings [#835](https://github.com/nextcloud/talk-desktop/pull/835)
+- Add monochrome tray icon setting [#836](https://github.com/nextcloud/talk-desktop/pull/836)
+- Add download links handling with a new message menu item [#840](https://github.com/nextcloud/talk-desktop/pull/840)
+- Add zoom setting and fix a number of zoom-related issues [#853](https://github.com/nextcloud/talk-desktop/pull/853)
+
+### Fixes
+
+- Fix error on launching app twice quickly before it initializes [#856](https://github.com/nextcloud/talk-desktop/pull/876)
+- Fix login window cannot be reopened after close on macOS [#852](https://github.com/nextcloud/talk-desktop/pull/852)
+- Fix Viewer close not handled during a call [#835](https://github.com/nextcloud/talk-desktop/pull/835)
+- Fix preview not shown for a supported mime-type [#831](https://github.com/nextcloud/talk-desktop/pull/831)
+
+### Changes 
+
+- Built-in Talk in binaries is updated to v20.0.2 [#858](https://github.com/nextcloud/talk-desktop/pull/858)
+- Built-in Talk version in now specified in `package.json` [#858](https://github.com/nextcloud/talk-desktop/pull/858)
+- Add Windows Squirrel distribution [#841](https://github.com/nextcloud/talk-desktop/pull/841)
+- Add macOS Dist Image (.dmg) distribution [#844](https://github.com/nextcloud/talk-desktop/pull/844)
+- Add Linux Flatpak file distribution [#869](https://github.com/nextcloud/talk-desktop/pull/869)
+- Handle opening a new installation as replacement of a running one [#859](https://github.com/nextcloud/talk-desktop/pull/859)
+- Check whether spreed repository dependencies are installed on build [#847](https://github.com/nextcloud/talk-desktop/pull/847)
+- Rename scripts `package` to `build`, `make` to `package` following Nextcloud apps and libs style [#846](https://github.com/nextcloud/talk-desktop/pull/846)
+- Update translations
+- Update dependencies
+
 ## v0.39.0 - 2024-10-11
 
 ### Build-in Talk update

@@ -29,7 +29,10 @@ declare module '@nextcloud/vue/dist/Components/*.js' {
 	export default component
 }
 
+// Built-time constants
 declare const IS_DESKTOP: true
+declare const __VERSION_TAG__: string
+declare const __TALK_VERSION_TAG__: string
 
 declare interface Window {
 	// Nextcloud Globals
@@ -44,26 +47,28 @@ declare interface Window {
 	} & any
 	// Talk Desktop IPC
 	TALK_DESKTOP: any
-	OS: any
+	systemInfo: typeof import('./app/system.utils.ts').systemInfo
 }
 
 /**
  * Electron Backend
  */
 
-declare global {
-	// Electron Forge built constants
-	const AUTHENTICATION_WINDOW_WEBPACK_ENTRY: string
-	const AUTHENTICATION_WINDOW_PRELOAD_WEBPACK_ENTRY: string
-	const TALK_WINDOW_WEBPACK_ENTRY: string
-	const TALK_WINDOW_PRELOAD_WEBPACK_ENTRY: string
-	const HELP_WINDOW_WEBPACK_ENTRY: string
-	const HELP_WINDOW_PRELOAD_WEBPACK_ENTRY: string
-	const UPGRADE_WINDOW_WEBPACK_ENTRY: string
-	const UPGRADE_WINDOW_PRELOAD_WEBPACK_ENTRY: string
-	const WELCOME_WINDOW_WEBPACK_ENTRY: string
-	const WELCOME_WINDOW_PRELOAD_WEBPACK_ENTRY: string
+// Electron Forge built constants
+declare const AUTHENTICATION_WINDOW_WEBPACK_ENTRY: string
+declare const AUTHENTICATION_WINDOW_PRELOAD_WEBPACK_ENTRY: string
+declare const CALLBOX_WINDOW_PRELOAD_WEBPACK_ENTRY: string
+declare const CALLBOX_WINDOW_WEBPACK_ENTRY: string
+declare const TALK_WINDOW_WEBPACK_ENTRY: string
+declare const TALK_WINDOW_PRELOAD_WEBPACK_ENTRY: string
+declare const HELP_WINDOW_WEBPACK_ENTRY: string
+declare const HELP_WINDOW_PRELOAD_WEBPACK_ENTRY: string
+declare const UPGRADE_WINDOW_WEBPACK_ENTRY: string
+declare const UPGRADE_WINDOW_PRELOAD_WEBPACK_ENTRY: string
+declare const WELCOME_WINDOW_WEBPACK_ENTRY: string
+declare const WELCOME_WINDOW_PRELOAD_WEBPACK_ENTRY: string
 
+declare global {
 	// ENV
 	namespace NodeJS {
 		interface ProcessEnv {

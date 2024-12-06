@@ -6,7 +6,12 @@ OC.L10N.register(
     "Ok" : "তথাস্তু",
     "No" : "না",
     "Yes" : "হ্যাঁ",
+    "Light" : "হাল্কা",
+    "Dark" : "গাঢ়",
+    "Always" : "সর্বদা",
+    "Reset" : "পূণঃনির্ধানণ",
     "Today" : "আজ",
-    "Cancel" : "বাতিল করুন"
+    "Cancel" : "বাতিল করুন",
+    "Settings" : "সেটিংস"
 },
 "nplurals=2; plural=(n != 1);");
