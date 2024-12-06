@@ -2,7 +2,7 @@
   "private": true,
   "name": "talk-desktop",
   "productName": "Nextcloud Talk",
-  "version": "1.0.0",
+  "version": "1.0.0-iconics0.18",
   "description": "Official Desktop client for Nextcloud Talk",
   "bugs": {
     "url": "https://github.com/nextcloud/talk-desktop/issues",
@@ -56,6 +56,7 @@
     "@nextcloud/router": "^3.0.1",
     "@nextcloud/vue": "^8.21.0",
     "@vueuse/core": "^11.3.0",
+    "auto-launch": "^5.0.6",
     "core-js": "^3.39.0",
     "electron-squirrel-startup": "^1.0.1",
     "howler": "^2.2.4",

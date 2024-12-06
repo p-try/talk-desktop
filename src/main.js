@@ -21,6 +21,7 @@ const { loadAppConfig, getAppConfig, setAppConfig } = require('./app/AppConfig.t
 const { triggerDownloadUrl } = require('./app/downloads.ts')
 const { applyTheme } = require('./app/theme.config.ts')
 const { createCallboxWindow } = require('./callbox/callbox.window.ts')
+const AutoLaunch = require('auto-launch')
 
 /**
  * Parse command line arguments
@@ -46,6 +47,10 @@ if (isWindows) {
  * Handle creating/removing shortcuts on Windows when installing/uninstalling
  */
 if (require('electron-squirrel-startup')) {
+	const autoLaunch = new AutoLaunch({
+		name: app.name,
+	})
+	autoLaunch.enable()
 	app.quit()
 }
 
