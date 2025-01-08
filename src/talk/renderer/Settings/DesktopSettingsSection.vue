@@ -27,7 +27,11 @@ import { useAppConfigValue } from './useAppConfigValue.ts'
 import { useNcSelectModel } from '../composables/useNcSelectModel.ts'
 import { ZOOM_MIN, ZOOM_MAX } from '../../../constants.js'
 
+const isLinux = window.systemInfo.isLinux
+
 const { isRelaunchRequired } = storeToRefs(useAppConfigStore())
+
+const launchAtStartup = useAppConfigValue('launchAtStartup')
 
 const theme = useAppConfigValue('theme')
 const themeOptions = [
@@ -97,6 +101,12 @@ function relaunch() {
 			</div>
 		</NcNoteCard>
 
+		<SettingsSubsection v-if="!isLinux" :name="t('talk_desktop', 'General')">
+			<NcCheckboxRadioSwitch v-model="launchAtStartup" type="switch">
+				{{ t('talk_desktop', 'Launch at startup') }}
+			</NcCheckboxRadioSwitch>
+		</SettingsSubsection>
+
 		<SettingsSubsection :name="t('talk_desktop', 'Appearance')">
 			<SettingsSelect v-model="themeOption" :options="themeOptions" :label="t('talk_desktop', 'Theme')">
 				<template #icon="{ size }">
@@ -104,11 +114,11 @@ function relaunch() {
 				</template>
 			</SettingsSelect>
 
-			<NcCheckboxRadioSwitch :checked.sync="monochromeTrayIcon" type="switch">
+			<NcCheckboxRadioSwitch v-model="monochromeTrayIcon" type="switch">
 				{{ t('talk_desktop', 'Use monochrome tray icon') }}
 			</NcCheckboxRadioSwitch>
 
-			<NcCheckboxRadioSwitch :checked.sync="systemTitleBar" type="switch">
+			<NcCheckboxRadioSwitch v-model="systemTitleBar" type="switch">
 				{{ t('talk_desktop', 'Use system title bar') }}
 			</NcCheckboxRadioSwitch>
 
@@ -131,7 +141,7 @@ function relaunch() {
 						:aria-describedby="descriptionId"
 						label-outside
 						inputmode="number"
-						:value="zoomFactorPercentage"
+						:model-value="zoomFactorPercentage"
 						@change="zoomFactorPercentage = $event.target.value"
 						@blur="$event.target.value = zoomFactorPercentage" />
 					<NcButton :aria-label="t('talk_desktop', 'Zoom in')" type="tertiary" @click="zoomFactor *= ZOOM_STEP">

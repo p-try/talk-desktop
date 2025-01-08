@@ -35,6 +35,8 @@ OC.L10N.register(
     "Never" : "Never",
     "Some changes require a relaunch to take effect" : "Some changes require a relaunch to take effect",
     "Restart" : "Restart",
+    "General" : "General",
+    "Launch at startup" : "Launch at start-up",
     "Appearance" : "Appearance",
     "Theme" : "Theme",
     "Use monochrome tray icon" : "Use monochrome tray icon",

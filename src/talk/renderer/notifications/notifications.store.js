@@ -20,6 +20,7 @@ import { t } from '@nextcloud/l10n'
 import { getNotificationsData } from './notifications.service.js'
 import { appData } from '../../../app/AppData.js'
 import { useUserStatusStore } from '../UserStatus/userStatus.store.js'
+import { checkCurrentUserHasPendingCall } from '../../../callbox/renderer/callbox.service.ts'
 import { getAppConfigValue } from '../../../shared/appConfig.service.ts'
 import { subscribeBroadcast } from '../../../shared/broadcast.service.ts'
 import { openConversation } from '../utils/talk.service.ts'
@@ -42,6 +43,7 @@ export function createNotificationStore() {
 		notifications: [],
 		lastETag: null,
 		lastTabId: null,
+		notificationThresholdId: 0,
 		userStatus: null,
 		tabId: null,
 		/** @type {number} */
@@ -160,7 +162,7 @@ export function createNotificationStore() {
 	 *
 	 * @param notification
 	 */
-	function showNativeNotification(notification) {
+	async function showNativeNotification(notification) {
 		if (notification.app !== 'spreed') {
 			return
 		}
@@ -168,8 +170,13 @@ export function createNotificationStore() {
 			return
 		}
 
+		const isNotificationFromPendingCall = notification.objectType === 'call'
+			&& await checkCurrentUserHasPendingCall(notification.objectId)
+
 		const enableCallboxConfig = getAppConfigValue('enableCallbox')
-		const shouldShowCallPopup = notification.objectType === 'call' && (enableCallboxConfig === 'always' || (enableCallboxConfig === 'respect-dnd' && !userStatusStore.isDnd))
+		const shouldShowCallPopup = isNotificationFromPendingCall
+			&& (enableCallboxConfig === 'always' || (enableCallboxConfig === 'respect-dnd' && !userStatusStore.isDnd))
+
 		if (shouldShowCallPopup) {
 			const params = {
 				token: notification.objectId,
@@ -201,7 +208,7 @@ export function createNotificationStore() {
 				emit('notifications:action:execute', event)
 			}, false)
 		}
-		playSound(notification.objectType === 'call')
+		playSound(isNotificationFromPendingCall)
 	}
 
 	/**
@@ -218,11 +225,14 @@ export function createNotificationStore() {
 			state.lastETag = response.headers.etag
 			state.lastTabId = response.tabId
 			state.notifications = response.data.filter((notification) => notification.app === 'spreed')
-			const newNotifications = state.notifications.filter((notification) => !notificationsSet.has(notification.notificationId))
+			const newNotifications = state.notifications.filter((notification) => {
+				return !notificationsSet.has(notification.notificationId) && notification.notificationId > state.notificationThresholdId
+			})
 			notificationsSet = new Set(state.notifications.map((notification) => notification.notificationId))
+			state.notificationThresholdId = response.notificationThresholdId
 			if (state.backgroundFetching) {
 				for (const notification of newNotifications) {
-					showNativeNotification(notification)
+					await showNativeNotification(notification)
 					emit('notifications:notification:received', { notification })
 				}
 			}

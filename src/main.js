@@ -20,6 +20,7 @@ const { installVueDevtools } = require('./install-vue-devtools.js')
 const { loadAppConfig, getAppConfig, setAppConfig } = require('./app/AppConfig.ts')
 const { triggerDownloadUrl } = require('./app/downloads.ts')
 const { applyTheme } = require('./app/theme.config.ts')
+const { initLaunchAtStartupListener } = require('./app/launchAtStartup.config.ts')
 const { createCallboxWindow } = require('./callbox/callbox.window.ts')
 const AutoLaunch = require('auto-launch')
 
@@ -123,6 +124,10 @@ let isInWindowRelaunch = false
 app.whenReady().then(async () => {
 	await loadAppConfig()
 	applyTheme()
+	initLaunchAtStartupListener()
+
+	// Open in the background if it is explicitly set, or the app was open at login on macOS
+	const openInBackground = ARGUMENTS.openInBackground || app.getLoginItemSettings().wasOpenedAtLogin
 
 	try {
 		// Note: legacy Vue devtools warns with "ExtensionLoadWarning: Manifest version 2 is deprecated, and support will be removed in 2024."
@@ -179,7 +184,8 @@ app.whenReady().then(async () => {
 	 */
 	app.on('second-instance', (event, argv, cwd) => {
 		// Instead of creating a new application instance - focus the current window
-		if (process.execPath === argv[0]) {
+		const secondInstanceExecPath = path.isAbsolute(argv[0]) ? argv[0] : path.resolve(cwd, argv[0])
+		if (process.execPath === secondInstanceExecPath) {
 			focusMainWindow()
 			return
 		}
@@ -274,7 +280,7 @@ app.whenReady().then(async () => {
 		mainWindow.once('ready-to-show', () => {
 			// Do not show the main window if it is the Talk Window opened in the background
 			const isTalkWindow = createMainWindow === createTalkWindow
-			if (!isTalkWindow || !ARGUMENTS.openInBackground) {
+			if (!isTalkWindow || !openInBackground) {
 				mainWindow.show()
 			}
 			welcomeWindow.close()
