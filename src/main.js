@@ -7,7 +7,7 @@ const path = require('node:path')
 const { spawn } = require('node:child_process')
 const { app, dialog, ipcMain, desktopCapturer, systemPreferences, shell } = require('electron')
 const { setupMenu } = require('./app/app.menu.js')
-const { setupReleaseNotificationScheduler } = require('./app/githubReleaseNotification.service.js')
+// const { setupReleaseNotificationScheduler } = require('./app/githubReleaseNotification.service.js')
 const { enableWebRequestInterceptor, disableWebRequestInterceptor } = require('./app/webRequestInterceptor.js')
 const { createAuthenticationWindow } = require('./authentication/authentication.window.js')
 const { openLoginWebView } = require('./authentication/login.window.js')
@@ -65,9 +65,9 @@ if (!app.requestSingleInstanceLock()) {
 /**
  * Schedule check for a new version available to download from GitHub
  */
-if (process.env.NODE_ENV === 'production') {
+/* if (process.env.NODE_ENV === 'production') {
 	setupReleaseNotificationScheduler(24 * 60)
-}
+} */
 
 ipcMain.on('app:quit', () => app.quit())
 ipcMain.handle('app:getSystemInfo', () => systemInfo)
